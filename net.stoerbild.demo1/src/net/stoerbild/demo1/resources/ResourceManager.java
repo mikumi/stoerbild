@@ -2,16 +2,21 @@ package net.stoerbild.demo1.resources;
 
 import java.net.URL;
 
+/**
+ * Resource Manager uses Classloder for loading resources
+ * @author mq
+ *
+ */
 public class ResourceManager {
 
 	/**
-	 * Loads and returns resource
+	 * Load and return resource
 	 * 
 	 * @param name
 	 * @return URL of resource
 	 */
-	public static URL getResource(String name) {
+	public static URL getResource(final String name) {
 		return ResourceManager.class.getClassLoader().getResource(name);
 	}
-	
+
 }

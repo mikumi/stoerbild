@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import com.jme.scene.Node;
 import com.jme.util.Timer;
 
+/**
+ * Represents an array of boxes
+ * 
+ * @author mq
+ */
 public class CoolArray extends Node {
 
-	/**
-	 * hold all boxes at their position
-	 */
+	// hold all boxes at their position
 	private boolean hold;
 
 	private float pushVelocity;
 	private boolean floorEnabled;
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6523618470157024778L;
 
 	private final ArrayList<CoolBox> boxes;
@@ -41,7 +41,7 @@ public class CoolArray extends Node {
 	 * @param xSize
 	 * @param zSize
 	 */
-	public CoolArray(int xSize, int zSize) {
+	public CoolArray(final int xSize, final int zSize) {
 		this("", xSize, zSize);
 	}
 
@@ -49,10 +49,11 @@ public class CoolArray extends Node {
 	 * Constuctor
 	 * 
 	 * @param name
+	 *            The name of the array scene node
 	 * @param xSize
 	 * @param zSize
 	 */
-	public CoolArray(String name, int xSize, int zSize) {
+	public CoolArray(final String name, final int xSize, final int zSize) {
 		super(name);
 		this.xSize = xSize;
 		this.zSize = zSize;
@@ -65,6 +66,9 @@ public class CoolArray extends Node {
 				boxes.add(box);
 			}
 		}
+		// as box-meshes do not change this will improve performance for about 20%
+		lockMeshes();
+
 		// reset all actions
 		resetActions();
 		lastSnakeAction = 0;
@@ -79,27 +83,31 @@ public class CoolArray extends Node {
 	 * Update the complete array (position of all boxes)
 	 */
 	public void update() {
-		if (hold)
+		if (hold) {
 			return;
+		}
+		// update running array actions
+		snake();
+		wave();
+		ring();
+		// calculate & update new positions
 		for (final CoolBox box : boxes) {
-			snake();
-			wave();
-			ring();
 			box.update(floorEnabled);
 		}
 	}
 
 	/**
-	 * Push complete array into the air
+	 * Push whole array into the air
 	 */
 	public void pushAll() {
-		if (hold)
+		if (hold) {
 			return;
+		}
 		for (final CoolBox box : boxes) {
 			box.push(pushVelocity);
 		}
 	}
-	
+
 	/**
 	 * Enable/Disable floor
 	 */
@@ -108,28 +116,31 @@ public class CoolArray extends Node {
 	}
 
 	/**
-	 * Push random boxes into the air
+	 * Push a random box into the air
 	 */
 	public void pushRand() {
-		if (hold)
+		if (hold) {
 			return;
+		}
 		final double rand = Math.random();
 		final int n = (int) Math.round(rand * (boxes.size() - 1));
 		boxes.get(n).push(pushVelocity);
 	}
 
 	/**
-	 * Create a wave going over the array
+	 * A wave going over the array
 	 */
 	private void wave() {
-		if (currentWave < 0)
+		if (currentWave < 0) {
 			return;
-		// repeat after wave is finished
+		}
+		// restart wave after it is finished
 		if (currentWave >= zSize) {
 			currentWave = 0;
 			return;
 		}
 
+		// push the according boxes into the air
 		if ((Timer.getTimer().getTimeInSeconds() - lastWaveAction) > 0.10f) {
 			lastWaveAction = Timer.getTimer().getTimeInSeconds();
 			// check which boxes should be pushed
@@ -147,9 +158,10 @@ public class CoolArray extends Node {
 	 * Create a snake going over the array
 	 */
 	private void snake() {
-		if (currentSnake < 0)
+		if (currentSnake < 0) {
 			return;
-		// repeat after snake is finished
+		}
+		// restart snake after it is finished
 		if (currentSnake >= boxes.size()) {
 			currentSnake = 0;
 			return;
@@ -176,34 +188,48 @@ public class CoolArray extends Node {
 	 * Create rings going over the array
 	 */
 	private void ring() {
-		if (currentRing < 0)
+		if (currentRing < 0) {
 			return;
+		}
 
 		if ((Timer.getTimer().getTimeInSeconds() - lastRingAction) > 0.1f) {
 			lastRingAction = Timer.getTimer().getTimeInSeconds();
 
 			// check which boxes should be pushed
+			boolean[] pushedYet = new boolean[xSize * zSize];
 			for (int i = 0; i < boxes.size(); i++) {
 				// each ring has 4 walls
 				// 1. wall
 				if ((getX(i) == currentRing) && (getZ(i) >= currentRing)
 						&& (getZ(i) <= zSize - currentRing)) {
-					boxes.get(i).push(pushVelocity);
+					if (!pushedYet[i]) {
+						boxes.get(i).push(pushVelocity);
+						pushedYet[i] = true;
+					}
 				}
 				// 2. wall
 				if ((getX(i) == xSize - currentRing) && (getZ(i) >= currentRing)
 						&& (getZ(i) <= zSize - currentRing)) {
-					boxes.get(i).push(pushVelocity);
+					if (!pushedYet[i]) {
+						boxes.get(i).push(pushVelocity);
+						pushedYet[i] = true;
+					}
 				}
 				// 3. wall
 				if ((getZ(i) == currentRing) && (getX(i) >= currentRing)
 						&& (getX(i) <= xSize - currentRing)) {
-					boxes.get(i).push(pushVelocity);
+					if (!pushedYet[i]) {
+						boxes.get(i).push(pushVelocity);
+						pushedYet[i] = true;
+					}
 				}
 				// 4. wall
 				if ((getZ(i) == zSize - currentRing) && (getX(i) >= currentRing)
 						&& (getX(i) <= xSize - currentRing)) {
-					boxes.get(i).push(pushVelocity);
+					if (!pushedYet[i]) {
+						boxes.get(i).push(pushVelocity);
+						pushedYet[i] = true;
+					}
 				}
 			}
 
@@ -228,7 +254,7 @@ public class CoolArray extends Node {
 	/**
 	 * start/stop the snake going through the array
 	 */
-	public void startSnake() {
+	public void switchSnake() {
 		if (currentSnake >= 0) {
 			currentSnake = -1;
 			return;
@@ -239,7 +265,7 @@ public class CoolArray extends Node {
 	/**
 	 * Start/stop waves going over the array
 	 */
-	public void startWave() {
+	public void switchWave() {
 		if (currentWave >= 0) {
 			currentWave = -1;
 			return;
@@ -250,7 +276,7 @@ public class CoolArray extends Node {
 	/**
 	 * Start/stop rings going over the array
 	 */
-	public void startRings() {
+	public void switchRings() {
 		if (currentRing >= 0) {
 			currentRing = -1;
 			return;
@@ -261,7 +287,7 @@ public class CoolArray extends Node {
 	/**
 	 * Hold/release all boxes at their postion
 	 */
-	public void hold() {
+	public void switchHold() {
 		hold = !hold;
 	}
 
@@ -276,29 +302,32 @@ public class CoolArray extends Node {
 	 * Change the push velocity
 	 */
 	public void changeVelocity() {
-		if (pushVelocity >= 120)
+		if (pushVelocity >= 120) {
 			pushVelocity = -20;
-		else
+		} else {
 			pushVelocity += 10;
+		}
 	}
 
 	/**
-	 * Transform i into position in a 2D-array
+	 * Transform a list position into position in a 2D-array
 	 * 
 	 * @param i
-	 * @return x coordinate
+	 *            list position
+	 * @return x array x-coordinate
 	 */
-	private int getX(int i) {
+	private int getX(final int i) {
 		return (i % xSize);
 	}
 
 	/**
-	 * Transform i into position in a 2D-array
+	 * Transform a list position into position in a 2D-array
 	 * 
 	 * @param i
-	 * @return y coordinate
+	 *            list position
+	 * @return y array y-coordinate
 	 */
-	private int getZ(int i) {
+	private int getZ(final int i) {
 		return (int) Math.ceil(i / xSize);
 	}
 

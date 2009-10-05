@@ -1,5 +1,8 @@
 package net.stoerbild.demo1;
 
+import net.stoerbild.demo1.resources.ResourceManager;
+import net.stoerbild.demo1.resources.Resources;
+
 import com.jme.app.SimplePassGame;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -8,28 +11,29 @@ import com.jme.renderer.pass.RenderPass;
 import com.jme.renderer.pass.ShadowedRenderPass;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.ZBufferState;
+import com.jmex.audio.AudioSystem;
+import com.jmex.audio.AudioTrack;
+import com.jmex.audio.MusicTrackQueue;
+import com.jmex.audio.MusicTrackQueue.RepeatType;
 import com.jmex.effects.glsl.BloomRenderPass;
 
+/**
+ * Stoerbild tech demo main application. configures display system, audio, levels...
+ * 
+ * @author mq
+ */
 public class Application extends SimplePassGame {
 
-	/**
-	 * FPS update rate in seconds
-	 */
+	// FPS update rate in seconds
 	private static final int FPS_UPDATE_RATE = 1;
 
-	/**
-	 * FPS Statistics
-	 */
+	// FPS Statistics
 	private final FPSCounter fpsCounter;
 
-	/**
-	 * The name of the application
-	 */
+	// The name of the application
 	private final String appName;
 
-	/**
-	 * Current game level
-	 */
+	// Current game level
 	private ILevel level;
 
 	/**
@@ -38,9 +42,9 @@ public class Application extends SimplePassGame {
 	 * @param appName
 	 *            for the application
 	 */
-	public Application(String appName) {
+	public Application(final String appName) {
 		super();
-		samples = 3; // FSAA
+		samples = 2; // FSAA
 		stencilBits = 8; // shadow calculation
 		this.appName = appName;
 		fpsCounter = new FPSCounter(FPS_UPDATE_RATE);
@@ -53,12 +57,15 @@ public class Application extends SimplePassGame {
 	 */
 	@Override
 	protected void simpleInitGame() {
+		assert display != null : "display is not correctly initialized";
+		assert rootNode != null : "rootNode is not correctly initialized";
+		
 		display.setVSyncEnabled(false); // disable vsync for performance reasons
 
 		display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
 		// z-buffer
-		// TODO checkout: what does z buffer exactly do?
+		// TODO checkout: what exactly does z buffer do?
 		final ZBufferState zBuffer = display.getRenderer().createZBufferState();
 		zBuffer.setEnabled(true);
 		zBuffer.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
@@ -69,15 +76,30 @@ public class Application extends SimplePassGame {
 		cullState.setCullFace(CullState.Face.Back);
 		rootNode.setRenderState(cullState);
 
-		updateTitle();
+		// Set application window title and load demo level
+		updateWindowTitle();
 		level = new DemoLevel(display.getRenderer(), rootNode);
 		level.init();
 
-		// as meshes do not change this will improve performance for about 20%
-		rootNode.lockMeshes(); 
+		// demo level is already locked internally, but locking root node will increase performance
+		// for an additional 5-10%
+		rootNode.lockMeshes();
 
 		// create all render passes.
 		createPassManager();
+
+		// initialize sound & music
+		final AudioTrack track = AudioSystem.getSystem().createAudioTrack(
+				ResourceManager.getResource(Resources.MUSIC_CASIO_PAYA_MP3), false);
+		System.out.println(Resources.MUSIC_CASIO_PAYA_MP3);
+		final MusicTrackQueue queue = AudioSystem.getSystem().getMusicQueue();
+		queue.setCrossfadeinTime(0);
+		queue.setRepeatType(RepeatType.ONE);
+		queue.addTrack(track);
+		//queue.play();
+
+		//MouseInput.get().setCursorVisible(true);
+
 	}
 
 	/*
@@ -89,36 +111,44 @@ public class Application extends SimplePassGame {
 	protected void simpleUpdate() {
 		assert level != null : "level is not correctly initialized";
 
-		updateTitle();
+		updateWindowTitle();
 		level.update();
+
+		//AudioSystem.getSystem().update();
 	}
 
 	/**
-	 * Update the application title including current fps
+	 * Update the application window title including current fps
 	 */
-	private void updateTitle() {
+	private void updateWindowTitle() {
 		assert fpsCounter != null : "fpsCounter is not correctly initialized";
-		// TODO Investigate: update app title / calculate averge fps -> each frame bad performance?
+		// Confirmed: Setting window title every frame does not have an impact on performance
 		display.setTitle(appName + " (" + fpsCounter.getAveragedFps(timer) + ")");
 	}
 
 	private void createPassManager() {
+		// render pass
 		final RenderPass renderPass = new RenderPass();
 		renderPass.add(rootNode);
 
+		// volume shadow
 		final ShadowedRenderPass shadowPass = new ShadowedRenderPass();
 		shadowPass.add(rootNode);
 		shadowPass.setRenderShadows(true);
 		shadowPass.setLightingMethod(ShadowedRenderPass.LightingMethod.Additive);
 		shadowPass.addOccluder(rootNode);
+		shadowPass.setRenderVolume(false);
+		//shadowPass.setShadowColor(ColorRGBA.black);
 
-		final DirectionalShadowMapPass sPass = new DirectionalShadowMapPass(new Vector3f(10, -10,
-				10));
-		sPass.setViewDistance(100);
-		sPass.add(rootNode);
-		sPass.setViewTarget(new Vector3f(10, -5, 10));
-		sPass.addOccluder(rootNode);
-		
+		// directional shadow map
+		final DirectionalShadowMapPass directionalShadowMapPass = new DirectionalShadowMapPass(
+				new Vector3f(100, -100, 100));
+		directionalShadowMapPass.setViewDistance(1000);
+		directionalShadowMapPass.add(rootNode);
+		directionalShadowMapPass.setViewTarget(new Vector3f(100, -50, 100));
+		directionalShadowMapPass.addOccluder(rootNode);
+
+		// bloom effect
 		final BloomRenderPass bloomPass = new BloomRenderPass(cam, 4);
 		bloomPass.add(rootNode);
 		bloomPass.setEnabled(true);
@@ -127,7 +157,7 @@ public class Application extends SimplePassGame {
 		bloomPass.setBlurSize(0.001f);
 
 		pManager.add(renderPass);
-		// pManager.add(sPass);
+		//pManager.add(directionalShadowMapPass);
 		pManager.add(shadowPass);
 		// pManager.add(bloomPass);
 	}
