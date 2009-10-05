@@ -2,7 +2,7 @@ package net.stoerbild.demo1;
 
 import java.net.URL;
 
-import net.stoerbild.demo1.resources.ResourceManager;
+import net.stoerbild.demo1.helper.ResourceManager;
 import net.stoerbild.demo1.resources.Resources;
 
 import com.jme.app.AbstractGame.ConfigShowMode;

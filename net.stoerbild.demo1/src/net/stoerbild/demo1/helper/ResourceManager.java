@@ -1,4 +1,4 @@
-package net.stoerbild.demo1.resources;
+package net.stoerbild.demo1.helper;
 
 import java.net.URL;
 

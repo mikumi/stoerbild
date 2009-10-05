@@ -1,4 +1,4 @@
-package net.stoerbild.demo1;
+package net.stoerbild.demo1.coolarray;
 
 import java.util.ArrayList;
 
