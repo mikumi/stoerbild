@@ -6,25 +6,18 @@ import com.jme.util.Timer;
  * FPSCounter will calculate averaged fps values
  * 
  * @author mq
- * 
  */
 public class FPSCounter {
 
-	/**
-	 * Update interval for fps in seconds
-	 */
+	// Update interval for fps in seconds
 	private float updateRate = 1.0f;
 
-	/**
-	 * time passed since last update
-	 */
+	// time passed since last update
 	private float lastUpdate = 0.0f;
 
-	/**
-	 * last average fps
-	 */
+	// last average fps
 	private int averageFps = 0;
-	
+
 	private int fpsSum = 0;
 	private int fpsCount = 0;
 
@@ -33,7 +26,7 @@ public class FPSCounter {
 	 * 
 	 * @param updateRate
 	 */
-	public FPSCounter(int updateRate) {
+	public FPSCounter(final int updateRate) {
 		setUpdateRate(updateRate);
 	}
 
@@ -44,9 +37,10 @@ public class FPSCounter {
 	 *            if timer is null last average fps is returned
 	 * @return average fps
 	 */
-	public int getAveragedFps(Timer timer) {
-		if (timer == null)
+	public int getAveragedFps(final Timer timer) {
+		if (timer == null) {
 			return averageFps;
+		}
 		if (lastUpdate > getUpdateRate()) {
 			averageFps = fpsSum / fpsCount;
 			lastUpdate = 0;
@@ -65,7 +59,7 @@ public class FPSCounter {
 	 * @param updateRate
 	 *            the updateRate to set
 	 */
-	public void setUpdateRate(float updateRate) {
+	public void setUpdateRate(final float updateRate) {
 		this.updateRate = updateRate;
 	}
 

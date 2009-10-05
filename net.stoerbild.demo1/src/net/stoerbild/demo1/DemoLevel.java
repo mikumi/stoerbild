@@ -22,8 +22,9 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 
 /**
- * @author mq
+ * Stoerbild Demo Level. Creates an array of boxes with physical attributes.
  * 
+ * @author mq
  */
 public class DemoLevel implements ILevel {
 
@@ -31,7 +32,7 @@ public class DemoLevel implements ILevel {
 	private final Renderer renderer;
 	private CoolArray coolArray;
 
-	public DemoLevel(Renderer renderer, Node rootNode) {
+	public DemoLevel(final Renderer renderer, final Node rootNode) {
 		this.rootNode = rootNode;
 		this.renderer = renderer;
 	}
@@ -48,8 +49,8 @@ public class DemoLevel implements ILevel {
 
 		// createPlane();
 		createLights();
-		
-		// all key actions
+
+		// set all key actions
 		KeyBindingManager.getKeyBindingManager().set("pushall", KeyInput.KEY_F);
 		KeyBindingManager.getKeyBindingManager().set("pushrand", KeyInput.KEY_V);
 		KeyBindingManager.getKeyBindingManager().set("snake", KeyInput.KEY_X);
@@ -59,7 +60,7 @@ public class DemoLevel implements ILevel {
 		KeyBindingManager.getKeyBindingManager().set("stopall", KeyInput.KEY_O);
 		KeyBindingManager.getKeyBindingManager().set("velocity", KeyInput.KEY_M);
 		KeyBindingManager.getKeyBindingManager().set("floor", KeyInput.KEY_K);
-		
+
 		// camera settings
 		renderer.getCamera().setLocation(new Vector3f(94, 44, 96));
 		renderer.getCamera().lookAt(new Vector3f(0, -10, 0), Vector3f.UNIT_Y);
@@ -79,16 +80,16 @@ public class DemoLevel implements ILevel {
 			coolArray.pushRand();
 		}
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("snake", false)) {
-			coolArray.startSnake();
+			coolArray.switchSnake();
 		}
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("wave", false)) {
-			coolArray.startWave();
+			coolArray.switchWave();
 		}
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("rings", false)) {
-			coolArray.startRings();
+			coolArray.switchRings();
 		}
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("hold", false)) {
-			coolArray.hold();
+			coolArray.switchHold();
 		}
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("stopall", false)) {
 			coolArray.stopAll();
@@ -109,7 +110,7 @@ public class DemoLevel implements ILevel {
 	private void createLights() {
 		final PointLight light1 = new PointLight();
 		light1.setLocation(new Vector3f(-20, 30, -20));
-		light1.setDiffuse(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.7f));
+		light1.setDiffuse(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f));
 		light1.setAttenuate(true);
 		light1.setEnabled(true);
 		light1.setShadowCaster(true);
@@ -126,7 +127,7 @@ public class DemoLevel implements ILevel {
 		light3.setDiffuse(new ColorRGBA(0.6f, 0.65f, 0.60f, 1.0f));
 		light3.setAttenuate(true);
 		light3.setEnabled(true);
-		light3.setShadowCaster(true); 
+		light3.setShadowCaster(true);
 
 		final PointLight light4 = new PointLight();
 		light4.setLocation(new Vector3f(50, -10, 20));
@@ -135,10 +136,10 @@ public class DemoLevel implements ILevel {
 		light4.setEnabled(true);
 		light4.setShadowCaster(false); // disabled for performance reasons
 
-		/** Attach the lights to a lightState and the lightState to rootNode. */
+		// Attach the lights to a lightState and the lightState to rootNode
 		final LightState lightState = renderer.createLightState();
 		lightState.setEnabled(true);
-		// lightState.setGlobalAmbient(new ColorRGBA(.2f, .2f, .2f, 1f));
+		lightState.setGlobalAmbient(new ColorRGBA(.0f, 0.0f, 0.0f, 1f));
 		lightState.attach(light1);
 		lightState.attach(light2);
 		lightState.attach(light3);
@@ -148,11 +149,11 @@ public class DemoLevel implements ILevel {
 		rootNode.setRenderState(lightState);
 	}
 
-	/** 
+	/**
 	 * Create a floor for the scene
 	 */
 	public void createPlane() {
-		// create size vectors for box
+		// create size vectors for box (100x0x100)
 		final Vector3f min = new Vector3f(-100, -10, -100);
 		final Vector3f max = new Vector3f(100, -10, 100);
 
@@ -165,6 +166,7 @@ public class DemoLevel implements ILevel {
 		final Node plane = new Node();
 		plane.attachChild(box);
 		plane.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+		plane.lockMeshes(); // mesh will not change. improves performance
 
 		// create and set texture
 		final TextureState textureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
