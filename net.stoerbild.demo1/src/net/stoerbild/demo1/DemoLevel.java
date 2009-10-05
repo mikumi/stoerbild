@@ -3,7 +3,8 @@
  */
 package net.stoerbild.demo1;
 
-import net.stoerbild.demo1.resources.ResourceManager;
+import net.stoerbild.demo1.coolarray.CoolArray;
+import net.stoerbild.demo1.helper.ResourceManager;
 import net.stoerbild.demo1.resources.Resources;
 
 import com.jme.bounding.BoundingBox;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.stoerbild.demo1;
+package net.stoerbild.demo1.coolarray;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;

@@ -1,4 +1,4 @@
-package net.stoerbild.demo1;
+package net.stoerbild.demo1.helper;
 
 import com.jme.util.Timer;
 
