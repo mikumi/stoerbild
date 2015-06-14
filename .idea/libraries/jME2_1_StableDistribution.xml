@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="jME2_1_StableDistribution">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-terrain.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-ogrexml.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-gamestates.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-effects.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-font.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-editors.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-audio.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-scene.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-model.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-swt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-collada.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/jme-awt.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

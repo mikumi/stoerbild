@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="macosx-cocoa">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/lib/swt/macosx-cocoa/swt_64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/lib/swt/macosx-cocoa/swt_fake.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/jME2_1_StableDistribution/lib/swt/macosx-cocoa/swt.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
